@@ -21,8 +21,6 @@ import (
 	"github.com/wtfutil/wtf/wtf"
 )
 
-/* -------------------- Main -------------------- */
-
 func main() {
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 
@@ -42,11 +40,11 @@ func main() {
 		defer profile.Start(profile.MemProfile).Stop()
 	}
 
-	openFileUtil := config.UString("wtf.openFileUtil", "open")
+	openFileUtil := config.UString("wtf.openFileUtil", "xdg-open")
 	openURLUtil := utils.ToStrs(config.UList("wtf.openUrlUtil", []interface{}{}))
 	utils.Init(openFileUtil, openURLUtil)
 
-	/* Initialize the App Manager */
+	// Initialize the App Manager
 	appMan := app.NewAppManager()
 	appMan.MakeNewWtfApp(config, flags.Config)
 
