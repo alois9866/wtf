@@ -6,11 +6,11 @@ import (
 	"time"
 )
 
-// AM defines the AM string format
-const AM = "A"
+const (
+	AM = "A"
+	PM = "P"
+)
 
-// PM defines the PM string format
-const PM = "P"
 const minRowsForBorder = 3
 
 // Converts integer to string along with makes sure the length of string is > 2
@@ -36,20 +36,11 @@ func getHourMinute(hourFormat string) string {
 		} else {
 			AMPM = PM
 		}
-
 	}
 
 	strMinutes := intStrConv(time.Now().Minute())
 	strMinutes += AMPM
-	return strHours + getColon() + strMinutes
-}
-
-// Returns the : with blinking based on the seconds
-func getColon() string {
-	if time.Now().Second()%2 == 0 {
-		return ":"
-	}
-	return " "
+	return strHours + ":" + strMinutes
 }
 
 func getDate(dateFormat string, withDatePrefix bool) string {
