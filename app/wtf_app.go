@@ -13,7 +13,6 @@ import (
 	"github.com/rivo/tview"
 
 	"github.com/wtfutil/wtf/cfg"
-	"github.com/wtfutil/wtf/support"
 	"github.com/wtfutil/wtf/utils"
 	"github.com/wtfutil/wtf/wtf"
 )
@@ -27,7 +26,6 @@ type WtfApp struct {
 	configFilePath string
 	display        *Display
 	focusTracker   FocusTracker
-	ghUser         *support.GitHubUser
 	pages          *tview.Pages
 	validator      *ModuleValidator
 	widgets        []wtf.Wtfable
@@ -64,9 +62,6 @@ func NewWtfApp(tviewApp *tview.Application, config *config.Config, configFilePat
 	wtfApp.display = NewDisplay(wtfApp.widgets, wtfApp.config)
 	wtfApp.focusTracker = NewFocusTracker(wtfApp.TViewApp, wtfApp.widgets, wtfApp.config)
 	wtfApp.validator = NewModuleValidator()
-
-	githubAPIKey := readGitHubAPIKey(wtfApp.config)
-	wtfApp.ghUser = support.NewGitHubUser(githubAPIKey)
 
 	wtfApp.pages.AddPage("grid", wtfApp.display.Grid, true, true)
 
@@ -111,7 +106,6 @@ func handleRedraws(tviewApp *tview.Application, redrawChan chan bool) {
 func (wtfApp *WtfApp) Exit() {
 	wtfApp.Stop()
 	wtfApp.TViewApp.Stop()
-	wtfApp.DisplayExitMessage()
 	os.Exit(0)
 }
 
@@ -128,9 +122,6 @@ func (wtfApp *WtfApp) Execute() error {
 func (wtfApp *WtfApp) Start() {
 	go wtfApp.scheduleWidgets()
 	go wtfApp.watchForConfigChanges()
-
-	// FIXME: This should be moved to the AppManager
-	go func() { _ = wtfApp.ghUser.Load() }()
 }
 
 // Stop kills all the currently-running widgets in this app
@@ -153,7 +144,6 @@ func (wtfApp *WtfApp) keyboardIntercept(event *tcell.EventKey) *tcell.EventKey {
 	case tcell.KeyCtrlC:
 		wtfApp.Stop()
 		wtfApp.TViewApp.Stop()
-		wtfApp.DisplayExitMessage()
 	case tcell.KeyCtrlR:
 		wtfApp.refreshAllWidgets()
 		return nil
